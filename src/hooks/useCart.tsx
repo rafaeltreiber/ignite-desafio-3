@@ -6,7 +6,6 @@ import {
   useState,
 } from "react";
 import { toast } from "react-toastify";
-import { ProductList } from "../pages/Home/styles";
 import { api } from "../services/api";
 import { Product, Stock } from "../types";
 
@@ -16,11 +15,6 @@ interface CartProviderProps {
 
 interface UpdateProductAmount {
   productId: number;
-  amount: number;
-}
-
-interface ProductAmount {
-  id: number;
   amount: number;
 }
 
@@ -45,20 +39,20 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
     return [];
   });
-  const [itemsAmount, setItemsAmount] = useState<ProductAmount[]>([]);
+  const [stock, setStock] = useState<Stock[]>([]);
 
   useEffect(() => {
     async function loadStock() {
       await api
         .get("http://localhost:3333/stock")
-        .then((response) => setItemsAmount(response.data));
+        .then((response) => setStock(response.data));
     }
 
     loadStock();
   }, []);
 
   const verifyAvailability = (productId: number) => {
-    const result = itemsAmount.find((item) => item.id === productId);
+    const result = stock.find((item) => item.id === productId);
     if (result) {
       return result.amount > 0;
     }
@@ -135,7 +129,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
   };
 
   const updateStock = (productId: number, type: string) => {
-    const newStock = itemsAmount.map((item) => {
+    const newStock = stock.map((item) => {
       if (item.id === productId) {
         if (type === "increment") {
           debugger;
@@ -150,7 +144,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       return item;
     });
 
-    setItemsAmount(newStock);
+    setStock(newStock);
   };
 
   return (
