@@ -9,6 +9,8 @@ import { useCart } from "../../hooks/useCart";
 import { formatPrice } from "../../util/format";
 import { Container, ProductTable, Total } from "./styles";
 
+import { toast } from "react-toastify";
+
 interface Product {
   id: number;
   title: string;
@@ -29,17 +31,16 @@ const Cart = (): JSX.Element => {
   // const cartFormatted = cart.map(product => ({
   //   // TODO
   // }))
-  // const total =
-  //   formatPrice(
-  //     cart.reduce((sumTotal, product) => {
-  //       // TODO
-  //     }, 0)
-  //   )
+  const total = formatPrice(
+    cart.reduce((sumTotal, product) => {
+      sumTotal += product.amount * product.price;
+
+      return sumTotal;
+    }, 0)
+  );
 
   function handleProductIncrement(product: Product) {
-    // TODO
     if (verifyAvailability(product.id)) {
-      // console.log("incremented")
       const productUpdates = {
         productId: product.id,
         amount: product.amount + 1,
@@ -47,7 +48,7 @@ const Cart = (): JSX.Element => {
 
       updateStock(product.id, "decrement");
       updateProductAmount(productUpdates);
-    } else console.log("No more in stock");
+    } else toast.error("Produto esgotado");
   }
 
   function handleProductDecrement(product: Product) {
@@ -62,13 +63,6 @@ const Cart = (): JSX.Element => {
   function handleRemoveProduct(productId: number) {
     updateStock(productId, "byAmount");
     removeProduct(productId);
-  }
-
-  function getCartTotalValue() {
-    return cart.reduce((acc, current) => {
-      acc += current.price * current.amount;
-      return acc;
-    }, 0);
   }
 
   return (
@@ -140,7 +134,7 @@ const Cart = (): JSX.Element => {
 
         <Total>
           <span>TOTAL</span>
-          <strong> {formatPrice(getCartTotalValue())}</strong>
+          <strong> {total}</strong>
         </Total>
       </footer>
     </Container>

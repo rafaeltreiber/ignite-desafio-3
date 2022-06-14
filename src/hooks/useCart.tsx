@@ -89,9 +89,12 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
         }
 
         updateStock(productId, "decrement");
-      } else console.log("No items in stock");
+      } else {
+        // console.log("No items in stock");
+        toast.error("Quantidade solicitada fora de estoque");
+      }
     } catch {
-      // TODO
+      toast.error("Erro na adição do produto");
     }
   };
 
@@ -101,7 +104,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
       setCart(filteredCart);
     } catch {
-      // TODO
+      toast.error("Erro na remoção do produto");
     }
   };
 
@@ -117,7 +120,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       });
       setCart(newCart);
     } catch {
-      // TODO
+      toast.error("Erro na alteração de quantidade do produto");
     }
   };
 
