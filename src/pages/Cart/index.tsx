@@ -9,8 +9,6 @@ import { useCart } from "../../hooks/useCart";
 import { formatPrice } from "../../util/format";
 import { Container, ProductTable, Total } from "./styles";
 
-import { toast } from "react-toastify";
-
 interface Product {
   id: number;
   title: string;
@@ -20,13 +18,7 @@ interface Product {
 }
 
 const Cart = (): JSX.Element => {
-  const {
-    cart,
-    verifyAvailability,
-    removeProduct,
-    updateProductAmount,
-    updateStock,
-  } = useCart();
+  const { cart, removeProduct, updateProductAmount } = useCart();
 
   const cartFormatted = cart.map((product) => ({
     ...product,
@@ -43,28 +35,20 @@ const Cart = (): JSX.Element => {
   );
 
   function handleProductIncrement(product: Product) {
-    if (verifyAvailability(product.id)) {
-      const productUpdates = {
-        productId: product.id,
-        amount: product.amount + 1,
-      };
-
-      updateStock(product.id, "decrement");
-      updateProductAmount(productUpdates);
-    } else toast.error("Produto esgotado");
+    updateProductAmount({
+      productId: product.id,
+      amount: product.amount + 1,
+    });
   }
 
   function handleProductDecrement(product: Product) {
-    const productUpdates = {
+    updateProductAmount({
       productId: product.id,
-      amount: product.amount > 0 ? product.amount - 1 : 0,
-    };
-    updateStock(product.id, "increment");
-    updateProductAmount(productUpdates);
+      amount: product.amount - 1,
+    });
   }
 
   function handleRemoveProduct(productId: number) {
-    updateStock(productId, "byAmount");
     removeProduct(productId);
   }
 
